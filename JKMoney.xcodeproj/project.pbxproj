@@ -30,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A24A0E5C2D285A4D00186145 /* Exceptions for "JKMoney" folder in "JKMoney" target */ = {
+		A25C0C352D2D3064008E7B6B /* Exceptions for "JKMoney" folder in "JKMoney" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -40,14 +40,6 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		A24A0E382D285A4B00186145 /* JKMoney */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				A24A0E5C2D285A4D00186145 /* Exceptions for "JKMoney" folder in "JKMoney" target */,
-			);
-			path = JKMoney;
-			sourceTree = "<group>";
-		};
 		A24A0E4D2D285A4D00186145 /* JKMoneyTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = JKMoneyTests;
@@ -56,6 +48,14 @@
 		A24A0E572D285A4D00186145 /* JKMoneyUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = JKMoneyUITests;
+			sourceTree = "<group>";
+		};
+		A25C0C1F2D2D3064008E7B6B /* JKMoney */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A25C0C352D2D3064008E7B6B /* Exceptions for "JKMoney" folder in "JKMoney" target */,
+			);
+			path = JKMoney;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -88,7 +88,7 @@
 		A24A0E2D2D285A4B00186145 = {
 			isa = PBXGroup;
 			children = (
-				A24A0E382D285A4B00186145 /* JKMoney */,
+				A25C0C1F2D2D3064008E7B6B /* JKMoney */,
 				A24A0E4D2D285A4D00186145 /* JKMoneyTests */,
 				A24A0E572D285A4D00186145 /* JKMoneyUITests */,
 				A24A0E372D285A4B00186145 /* Products */,
@@ -121,7 +121,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				A24A0E382D285A4B00186145 /* JKMoney */,
+				A25C0C1F2D2D3064008E7B6B /* JKMoney */,
 			);
 			name = JKMoney;
 			packageProductDependencies = (
@@ -291,7 +291,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"JKMoney/Preview Content\"";
-				DEVELOPMENT_TEAM = D2262Q5R9B;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = JKMoney/Info.plist;
@@ -322,7 +322,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"JKMoney/Preview Content\"";
-				DEVELOPMENT_TEAM = D2262Q5R9B;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = JKMoney/Info.plist;

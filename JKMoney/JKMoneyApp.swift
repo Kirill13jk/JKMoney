@@ -1,32 +1,40 @@
-//
-//  JKMoneyApp.swift
-//  JKMoney
-//
-//  Created by prom1 on 03.01.2025.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct JKMoneyApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+    @StateObject private var appViewModel = AppViewModel()
+    @StateObject private var colorManager = ColorManager()
 
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    // Храним выбранную тему (системная / светлая / тёмная)
+    @AppStorage("selectedTheme") private var selectedTheme: String = ThemeMode.system.rawValue
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(colorManager)
+                .environmentObject(appViewModel)
+                .modelContainer(for: [Transaction.self, UserProfile.self, Budget.self])
+                .preferredColorScheme(colorSchemeFromTheme(selectedTheme))
         }
-        .modelContainer(sharedModelContainer)
     }
+    
+    // MARK: - Поддержка трёх тем
+    private func colorSchemeFromTheme(_ theme: String) -> ColorScheme? {
+        guard let mode = ThemeMode(rawValue: theme) else { return nil }
+        switch mode {
+        case .system:
+            return nil
+        case .light:
+            return .light
+        case .dark:
+            return .dark
+        }
+    }
+}
+
+enum ThemeMode: String, CaseIterable {
+    case system = "Системная"
+    case light  = "Светлая"
+    case dark   = "Тёмная"
 }
