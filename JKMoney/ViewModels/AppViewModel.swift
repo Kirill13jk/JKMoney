@@ -4,7 +4,6 @@ final class AppViewModel: ObservableObject {
     @Published var isSignedIn: Bool = false
     
     init() {
-        // Если userId есть в UserDefaults, считаем пользователя авторизованным
         if let _ = UserDefaults.standard.string(forKey: "userId") {
             self.isSignedIn = true
         }

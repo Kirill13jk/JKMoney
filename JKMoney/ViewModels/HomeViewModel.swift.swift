@@ -2,7 +2,6 @@ import SwiftUI
 import SwiftData
 import Combine
 
-/// ViewModel для домашнего экрана (теперь без фильтра)
 class HomeViewModel: ObservableObject {
     @Published var transactions: [Transaction] = []
     
@@ -13,12 +12,8 @@ class HomeViewModel: ObservableObject {
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
         self.currentUserId = UserDefaults.standard.string(forKey: "userId")
-        
-        // Выполняем одну загрузку транзакций (без фильтра)
         fetchTransactions()
     }
-    
-    // MARK: - Загрузка всех транзакций текущего пользователя
     
     private func fetchTransactions() {
         guard let uid = currentUserId else {
@@ -32,7 +27,6 @@ class HomeViewModel: ObservableObject {
         )
         
         do {
-            // Получаем все транзакции пользователя (без фильтра доход/расход)
             transactions = try modelContext.fetch(descriptor)
         } catch {
             print("Ошибка загрузки транзакций: \(error)")
@@ -40,9 +34,6 @@ class HomeViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Сводка доход/расход по валютам (по всем транзакциям)
-    
-    /// Группируем по валюте и считаем суммы доходов и расходов.
     var currencyTotals: [CurrencyType: (income: Double, expense: Double)] {
         let groupedByCurrency = Dictionary(grouping: transactions, by: { $0.currency })
         
@@ -61,12 +52,9 @@ class HomeViewModel: ObservableObject {
         return result
     }
     
-    // MARK: - Удаление транзакции
-    
     func deleteTransaction(_ transaction: Transaction) {
         modelContext.delete(transaction)
         saveContext()
-        // Перезагружаем список
         fetchTransactions()
     }
     

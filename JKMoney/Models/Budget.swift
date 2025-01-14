@@ -4,7 +4,7 @@ import Foundation
 @Model
 final class Budget {
     @Attribute(.unique) var id: UUID
-    var type: TransactionType  // доход/расход
+    var type: TransactionType
     var amount: Double
     var currency: CurrencyType
     var date: Date

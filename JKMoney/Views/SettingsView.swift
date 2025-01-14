@@ -5,28 +5,23 @@ struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Тема")) {
-                    Picker("Выберите тему", selection: $viewModel.selectedThemeMode) {
-                        ForEach(ThemeMode.allCases, id: \.self) { mode in
-                            Text(mode.rawValue).tag(mode)
-                        }
+        Form {
+            Section("Тема") {
+                Picker("Выберите тему", selection: $viewModel.selectedThemeMode) {
+                    ForEach(ThemeMode.allCases, id: \.self) { mode in
+                        Text(mode.rawValue).tag(mode)
                     }
-                    .pickerStyle(.segmented)
-                    .accessibilityLabel("Выбор темы приложения")
                 }
-                
-                Section {
-                    Button("Выйти") {
-                        viewModel.appViewModel = appViewModel
-                        viewModel.signOut()
-                    }
-                    .foregroundColor(.red)
-                    .accessibilityLabel("Выйти из аккаунта")
-                }
+                .pickerStyle(.segmented)
             }
-            .navigationTitle("Настройки")
+            
+            Section {
+                Button("Выйти") {
+                    appViewModel.signOut()
+                }
+                .foregroundColor(.red)
+            }
         }
+        .navigationTitle("Настройки")
     }
 }

@@ -26,7 +26,6 @@ struct TransactionsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink {
-                        // Передаём реальный modelContext в AddTransactionView
                         AddTransactionView()
                     } label: {
                         Image(systemName: "plus")

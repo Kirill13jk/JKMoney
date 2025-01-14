@@ -1,13 +1,11 @@
 import SwiftData
 import Foundation
 
-/// Тип транзакции
 enum TransactionType: String, Codable, CaseIterable {
     case income  = "income"
     case expense = "expense"
 }
 
-/// Тип валюты
 enum CurrencyType: String, Codable, CaseIterable {
     case usd = "USD"
     case uzs = "UZS"
@@ -15,7 +13,6 @@ enum CurrencyType: String, Codable, CaseIterable {
     case rub = "RUB"
 }
 
-/// SwiftData-модель транзакции
 @Model
 final class Transaction {
     @Attribute(.unique) var id: UUID
