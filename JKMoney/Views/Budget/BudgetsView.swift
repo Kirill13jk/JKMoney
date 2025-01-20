@@ -6,30 +6,42 @@ struct BudgetsView: View {
     @Query(sort: \Budget.date, order: .reverse) var budgets: [Budget]
     
     var body: some View {
-        VStack(spacing: 8) {
-            List {
-                ForEach(budgets) { budget in
-                    BudgetRow(budget: budget)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .swipeActions(edge: .trailing) {
+        VStack {
+            if budgets.isEmpty {
+                Spacer()
+                Text("Нет бюджетов. Нажмите «+» чтобы добавить.")
+                    .multilineTextAlignment(.center)
+                    .padding()
+                Spacer()
+            } else {
+                List {
+                    ForEach(budgets) { budget in
+                        NavigationLink(destination: BudgetDetailView(budget: budget)) {
+                            BudgetRow(budget: budget)
+                        }
+                        .swipeActions {
                             Button(role: .destructive) {
                                 modelContext.delete(budget)
                                 try? modelContext.save()
                             } label: {
                                 Label("Удалить", systemImage: "trash")
                             }
-                            .tint(.red)
                         }
+                        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)) // Настройка отступов
+                    }
                 }
+                .padding(.top, 8)
+                .listStyle(.insetGrouped)
             }
-            .listStyle(.plain)
         }
         .navigationTitle("Бюджет")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink(destination: AddBudgetView()) {
                     Image(systemName: "plus")
+                        .padding(10)
+                        .background(Color(UIColor.secondarySystemBackground))
+                        .clipShape(Circle())
                 }
             }
         }

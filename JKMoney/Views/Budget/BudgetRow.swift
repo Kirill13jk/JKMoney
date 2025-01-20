@@ -4,36 +4,32 @@ struct BudgetRow: View {
     let budget: Budget
     
     var body: some View {
-        VStack {
-            HStack {
-                HStack(spacing: 8) {
-                    Image(systemName: currencyIcon)
-                        .foregroundColor(currencyColor)
-                        .font(.title3)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(budget.type == .income ? "Доход" : "Расход")
-                            .font(.headline)
-                        Text(budget.currency.rawValue.uppercased())
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                Spacer()
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(String(format: "%.2f", budget.amount))
-                        .fontWeight(.bold)
-                        .foregroundColor(budget.type == .income ? .green : .red)
-                    Text(budget.date, style: .date)
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                }
+        HStack(spacing: 16) {
+            Image(systemName: currencyIcon)
+                .foregroundColor(currencyColor)
+                .font(.title3)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Бюджет")
+                    .font(.headline)
+                
+                Text(budget.currency.rawValue.uppercased())
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            VStack(alignment: .trailing, spacing: 4) {
+                Text("\(formatted(budget.amount))")
+                    .fontWeight(.bold)
+                    .foregroundColor(budget.type == .income ? .green : .red)
+                Text(budget.date, style: .date)
+                    .font(.footnote)
+                    .foregroundColor(.gray)
             }
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color(UIColor.secondarySystemBackground))
-        )
+        .padding(.vertical, 8) 
     }
     
     private var currencyIcon: String {
@@ -52,5 +48,13 @@ struct BudgetRow: View {
         case .uzs: return .pink
         case .rub: return .purple
         }
+    }
+    
+    private func formatted(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        formatter.groupingSeparator = " "
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
     }
 }

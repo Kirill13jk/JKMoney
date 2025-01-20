@@ -9,35 +9,18 @@ struct AddTransactionView: View {
     @State private var date: Date = Date()
     @State private var selectedType: TransactionType = .income
     @State private var selectedCurrency: CurrencyType = .usd
-    @State private var selectedCategory: String = "Работа"
+    @State private var selectedCategoryItem: CategoryItem = incomeCategories.first!
     @State private var comment: String = ""
     
-    private let incomeCategories = ["Работа", "Фриланс", "Депозит", "Другое"]
-    private let expenseCategories = ["Транспорт", "Здоровье", "Дом", "Ремонт", "Еда", "Другое"]
-    
-    private var currentCategories: [String] {
+    private var currentCategories: [CategoryItem] {
         selectedType == .income ? incomeCategories : expenseCategories
     }
     
-    private func updateCategoryIfNeeded() {
-        if !currentCategories.contains(selectedCategory) {
-            selectedCategory = currentCategories.first ?? ""
-        }
-    }
-    
     private var isFormValid: Bool {
-        guard let amt = Double(amount.replacingOccurrences(of: " ", with: "")), amt > 0 else { return false }
+        guard let amt = Double(amount.replacingOccurrences(of: " ", with: "")), amt > 0 else {
+            return false
+        }
         return true
-    }
-    
-    private func formatAmount(_ input: String) -> String {
-        let rawNumber = Double(input.replacingOccurrences(of: " ", with: "")) ?? 0
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 2
-        formatter.groupingSeparator = " "
-        formatter.locale = Locale.current
-        return formatter.string(from: NSNumber(value: rawNumber)) ?? input
     }
     
     var body: some View {
@@ -50,9 +33,13 @@ struct AddTransactionView: View {
                 }
                 .pickerStyle(.segmented)
                 
-                Picker("Категория", selection: $selectedCategory) {
-                    ForEach(currentCategories, id: \.self) { category in
-                        Text(category).tag(category)
+                Picker("Категория", selection: $selectedCategoryItem) {
+                    ForEach(currentCategories, id: \.id) { category in
+                        HStack {
+                            Image(systemName: category.icon)
+                            Text(category.title)
+                        }
+                        .tag(category)
                     }
                 }
                 
@@ -64,13 +51,6 @@ struct AddTransactionView: View {
                 
                 TextField("Сумма", text: $amount)
                     .keyboardType(.decimalPad)
-                    .onChange(of: amount) { _, newValue in
-                        DispatchQueue.main.async {
-                            if newValue != formatAmount(newValue) {
-                                amount = formatAmount(newValue)
-                            }
-                        }
-                    }
                 
                 DatePicker("Дата", selection: $date, displayedComponents: .date)
             }
@@ -94,12 +74,6 @@ struct AddTransactionView: View {
                 }
             }
         }
-        .onChange(of: selectedType) { _, _ in
-            updateCategoryIfNeeded()
-        }
-        .task {
-            updateCategoryIfNeeded()
-        }
     }
     
     private func saveTransaction() {
@@ -108,15 +82,16 @@ struct AddTransactionView: View {
         guard let amt = Double(amount.replacingOccurrences(of: " ", with: "")) else { return }
         
         let transaction = Transaction(
-            title: selectedCategory,
+            title: selectedCategoryItem.title,
             amount: amt,
             date: date,
-            category: selectedCategory,
+            category: selectedCategoryItem.title,
             type: selectedType,
             currency: selectedCurrency,
             userId: uid,
             comment: comment.isEmpty ? nil : comment
         )
+        
         modelContext.insert(transaction)
         try? modelContext.save()
         dismiss()

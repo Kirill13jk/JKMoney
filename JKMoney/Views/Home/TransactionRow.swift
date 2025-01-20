@@ -3,40 +3,42 @@ import SwiftData
 
 struct TransactionRow: View {
     let transaction: Transaction
-    @EnvironmentObject var colorManager: ColorManager
-
+    
     var body: some View {
-        VStack {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(transaction.category)
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    
-                    Text(transaction.type == .income ? "Доход" : "Расход")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("\(transaction.amount, specifier: "%.2f") \(transaction.currency.rawValue)")
-                        .fontWeight(.bold)
-                        .foregroundColor(transaction.type == .income ? .green : .red)
-                    
-                    Text(transaction.date, style: .date)
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                }
+        let categoryItem = findCategory(for: transaction.category)
+        
+        HStack {
+            if let catItem = categoryItem {
+                Image(systemName: catItem.icon)
+                    .foregroundColor(categoryItem?.color ?? .primary)
+                    .padding(6)
+
+            } else {
+                Image(systemName: "questionmark.circle")
+                    .foregroundColor(.gray)
+                    .font(.title3)
             }
             
-            // Комментарий, если есть
-            if let comment = transaction.comment, !comment.isEmpty {
-                Text(comment)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(transaction.category)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                Text(transaction.type == .income ? "Доход" : "Расход")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            VStack(alignment: .trailing, spacing: 4) {
+                Text("\(transaction.amount, specifier: "%.2f") \(transaction.currency.rawValue)")
+                    .fontWeight(.bold)
+                    .foregroundColor(transaction.type == .income ? .green : .red)
+                
+                Text(transaction.date, style: .date)
                     .font(.footnote)
                     .foregroundColor(.gray)
-                    .padding(.top, 4)
             }
         }
         .padding()
@@ -44,18 +46,15 @@ struct TransactionRow: View {
             RoundedRectangle(cornerRadius: 8)
                 .fill(Color(UIColor.secondarySystemBackground))
         )
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(transaction.category), \(transaction.type == .income ? "Доход" : "Расход"), сумма \(transaction.amount) \(transaction.currency.rawValue), дата \(formattedDate), комментарий: \(commentText)")
     }
     
-    private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter.string(from: transaction.date)
-    }
-    
-    private var commentText: String {
-        transaction.comment ?? "Без комментария"
+    private func findCategory(for title: String) -> CategoryItem? {
+        if let found = incomeCategories.first(where: { $0.title == title }) {
+            return found
+        }
+        if let found = expenseCategories.first(where: { $0.title == title }) {
+            return found
+        }
+        return nil
     }
 }
-

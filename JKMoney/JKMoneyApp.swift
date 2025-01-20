@@ -12,7 +12,7 @@ struct JKMoneyApp: App {
             RootView()
                 .environmentObject(appViewModel)
                 .environmentObject(colorManager)
-                .modelContainer(for: [Transaction.self, Budget.self, UserProfile.self])
+                .modelContainer(for: [Transaction.self, Budget.self, BudgetHistory.self, Goal.self, UserProfile.self])
                 .preferredColorScheme(colorSchemeFromTheme(selectedTheme))
         }
     }

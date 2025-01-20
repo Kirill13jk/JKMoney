@@ -13,28 +13,43 @@ struct AdaptiveContainer: View {
         }
     }
     
+    // MARK: - iPhone
     private var iPhoneContent: some View {
-        TabView {
+        TabView(selection: $selectedItem) {
             NavigationView { HomeView() }
                 .tabItem {
                     Label("Главная", systemImage: "house.fill")
                 }
+                .tag(SidebarItem.home)
+            
             NavigationView { AnalyticsView() }
                 .tabItem {
                     Label("Аналитика", systemImage: "chart.pie")
                 }
+                .tag(SidebarItem.analytics)
+            
             NavigationView { BudgetsView() }
                 .tabItem {
                     Label("Бюджет", systemImage: "dollarsign.circle")
                 }
+                .tag(SidebarItem.budget)
+            
+            NavigationView { GoalsView() }
+                .tabItem {
+                    Label("Цели", systemImage: "flag.fill")
+                }
+                .tag(SidebarItem.goals)
+            
             NavigationView { SettingsView() }
                 .tabItem {
                     Label("Настройки", systemImage: "gear")
                 }
+                .tag(SidebarItem.settings)
         }
         .accentColor(.blue)
     }
     
+    // MARK: - iPad
     private var iPadContent: some View {
         NavigationSplitView(columnVisibility: .constant(.all)) {
             sidebar
@@ -48,6 +63,8 @@ struct AdaptiveContainer: View {
                 BudgetsView()
             case .settings:
                 SettingsView()
+            case .goals:
+                GoalsView()
             }
         }
         .navigationSplitViewStyle(.balanced)
@@ -63,6 +80,7 @@ struct AdaptiveContainer: View {
             row(.home, label: "Главная", icon: "house.fill")
             row(.analytics, label: "Аналитика", icon: "chart.pie")
             row(.budget, label: "Бюджет", icon: "dollarsign.circle")
+            row(.goals, label: "Цели", icon: "flag.fill")
             row(.settings, label: "Настройки", icon: "gear")
         }
         .listStyle(.sidebar)
@@ -92,4 +110,5 @@ enum SidebarItem {
     case analytics
     case budget
     case settings
+    case goals 
 }

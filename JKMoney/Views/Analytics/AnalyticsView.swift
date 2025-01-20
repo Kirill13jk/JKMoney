@@ -44,14 +44,14 @@ struct AnalyticsView: View {
                 }
                 
                 Text("Сравнение по категориям")
-                    .font(.title2)
+                    .font(.title3)
                     .fontWeight(.bold)
                     .padding(.top, 8)
                 
                 combinedPieCharts
                 
                 Text("Общая аналитика по валюте")
-                    .font(.title2)
+                    .font(.title3)
                     .fontWeight(.bold)
                     .padding(.top, 16)
                 
