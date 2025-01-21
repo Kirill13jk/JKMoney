@@ -47,11 +47,6 @@ struct AddGoalView: View {
         }
         .navigationTitle("Новая цель")
         .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Отмена") {
-                    dismiss()
-                }
-            }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Сохранить") {
                     saveGoal()
