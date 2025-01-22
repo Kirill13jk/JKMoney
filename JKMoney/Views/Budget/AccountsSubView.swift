@@ -1,28 +1,24 @@
 import SwiftUI
 import SwiftData
 
-struct BudgetsView: View {
+struct AccountsSubView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Budget.date, order: .reverse) var budgets: [Budget]
     
-    /// Флаг для показа шторки "AddBudgetView"
     @State private var showAddBudgetSheet = false
-    
-    /// Для показа шторки "BudgetDetailView"
     @State private var selectedBudget: Budget? = nil
     
     var body: some View {
         VStack {
             if budgets.isEmpty {
                 Spacer()
-                Text("Нет бюджетов. Нажмите «+» чтобы добавить.")
+                Text("Нет счетов. \nНажмите «+» чтобы добавить.")
                     .multilineTextAlignment(.center)
                     .padding()
                 Spacer()
             } else {
                 List {
                     ForEach(budgets) { budget in
-                        // Кликабельная строка
                         Button {
                             selectedBudget = budget
                         } label: {
@@ -37,17 +33,13 @@ struct BudgetsView: View {
                                 Label("Удалить", systemImage: "trash")
                             }
                         }
-                        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                     }
                 }
-                .padding(.top, 8)
                 .listStyle(.insetGrouped)
             }
         }
-        .navigationTitle("Бюджет")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                // Кнопка => открыть шторку AddBudgetView
                 Button {
                     showAddBudgetSheet = true
                 } label: {
@@ -58,11 +50,10 @@ struct BudgetsView: View {
                 }
             }
         }
-        // Шторка для добавления нового бюджета
         .sheet(isPresented: $showAddBudgetSheet) {
             NavigationStack {
                 AddBudgetView()
-                    .navigationBarTitle("Новый бюджет", displayMode: .inline)
+                    .navigationBarTitle("Новый счёт", displayMode: .inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Отмена") {
@@ -74,12 +65,10 @@ struct BudgetsView: View {
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }
-        
-        // Шторка для детального просмотра бюджета
         .sheet(item: $selectedBudget) { budget in
             NavigationStack {
                 BudgetDetailView(budget: budget)
-                    .navigationBarTitle("Детали бюджета", displayMode: .inline)
+                    .navigationBarTitle("Детали счёта", displayMode: .inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Закрыть") {

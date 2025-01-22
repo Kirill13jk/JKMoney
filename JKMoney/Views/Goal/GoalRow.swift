@@ -6,6 +6,7 @@ struct GoalRow: View {
     
     var body: some View {
         HStack(spacing: 16) {
+            // Иконка категории (при желании)
             let categoryItem = goalCategories.first(where: { $0.title == goal.categoryTitle })
             
             if let iconName = categoryItem?.icon {
@@ -32,13 +33,14 @@ struct GoalRow: View {
             Spacer()
             
             VStack(alignment: .trailing) {
-                 Text("\(formatted(goal.currentAmount)) / \(formatted(goal.targetAmount)) \(goal.currency?.rawValue ?? "")")
+                Text("\(formatted(goal.currentAmount)) / \(formatted(goal.targetAmount)) \(goal.currency?.rawValue ?? "")")
                     .font(.footnote)
-                    .foregroundColor(.blue)
                     .fontWeight(.bold)
+                    .foregroundColor(.blue)
                 
                 if goal.targetAmount > 0 {
-                    ProgressView(value: clamped(goal.currentAmount, max: goal.targetAmount), total: goal.targetAmount)
+                    ProgressView(value: clamped(goal.currentAmount, max: goal.targetAmount),
+                                 total: goal.targetAmount)
                         .frame(width: 100)
                 }
             }
@@ -51,10 +53,10 @@ struct GoalRow: View {
     }
     
     private func formatted(_ value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 2
-        formatter.groupingSeparator = " "
-        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+        let fmt = NumberFormatter()
+        fmt.numberStyle = .decimal
+        fmt.maximumFractionDigits = 2
+        fmt.groupingSeparator = " "
+        return fmt.string(from: NSNumber(value: value)) ?? "\(value)"
     }
 }

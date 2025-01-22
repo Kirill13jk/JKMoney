@@ -1,72 +1,41 @@
 import SwiftUI
 import SwiftData
 
-enum GoalFilter: String, CaseIterable {
-    case all = "План"
-    case completed = "Исполненные"
-}
-
-struct GoalsView: View {
+struct CreditSubView: View {
     @Environment(\.modelContext) private var modelContext
+    @Query private var allCredits: [Credit]
     
-    @Query private var allGoals: [Goal]
-    
-    @State private var selectedFilter: GoalFilter = .all
-    
-    /// Шторка для AddGoalView
-    @State private var showAddGoalSheet = false
-    
-    /// Шторка для деталей
-    @State private var selectedGoal: Goal? = nil
+    @State private var showAddCreditSheet = false
+    @State private var selectedCredit: Credit? = nil
     
     init() {
         let uid = UserDefaults.standard.string(forKey: "userId") ?? "NOUSER"
-        _allGoals = Query(
+        _allCredits = Query(
             filter: #Predicate { $0.userId == uid },
             sort: [SortDescriptor(\.dateCreated, order: .reverse)]
         )
     }
     
-    private var filteredGoals: [Goal] {
-        switch selectedFilter {
-        case .all:
-            return allGoals.filter { $0.currentAmount < $0.targetAmount }
-        case .completed:
-            return allGoals.filter { $0.currentAmount >= $0.targetAmount }
-        }
-    }
-    
     var body: some View {
         VStack {
-            Picker("Фильтр", selection: $selectedFilter) {
-                ForEach(GoalFilter.allCases, id: \.self) { filter in
-                    Text(filter.rawValue).tag(filter)
-                }
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
-            .padding(.top, 8)
-            
-            if filteredGoals.isEmpty {
+            if allCredits.isEmpty {
                 Spacer()
-                Text(selectedFilter == .completed
-                     ? "Нет исполненных целей"
-                     : "Нет целей. \nНажмите «+» чтобы добавить.")
+                Text("Нет кредитов.\nНажмите «+» чтобы добавить.")
                     .multilineTextAlignment(.center)
                     .padding()
                 Spacer()
             } else {
                 List {
-                    ForEach(filteredGoals) { goal in
+                    ForEach(allCredits) { credit in
                         Button {
-                            selectedGoal = goal
+                            selectedCredit = credit
                         } label: {
-                            GoalRow(goal: goal)
+                            CreditRow(credit: credit)
                                 .contentShape(Rectangle())
                         }
                         .swipeActions {
                             Button(role: .destructive) {
-                                modelContext.delete(goal)
+                                modelContext.delete(credit)
                                 try? modelContext.save()
                             } label: {
                                 Label("Удалить", systemImage: "trash")
@@ -77,11 +46,10 @@ struct GoalsView: View {
                 .listStyle(.insetGrouped)
             }
         }
-        .navigationTitle("Цели")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    showAddGoalSheet = true
+                    showAddCreditSheet = true
                 } label: {
                     Image(systemName: "plus")
                         .padding(10)
@@ -90,15 +58,14 @@ struct GoalsView: View {
                 }
             }
         }
-        // Шторка для AddGoalView
-        .sheet(isPresented: $showAddGoalSheet) {
+        .sheet(isPresented: $showAddCreditSheet) {
             NavigationStack {
-                AddGoalView()
-                    .navigationBarTitle("Новая цель", displayMode: .inline)
+                AddCreditView()
+                    .navigationBarTitle("Новый кредит", displayMode: .inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Отмена") {
-                                showAddGoalSheet = false
+                                showAddCreditSheet = false
                             }
                         }
                     }
@@ -106,15 +73,14 @@ struct GoalsView: View {
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
         }
-        // Шторка для деталей
-        .sheet(item: $selectedGoal) { goal in
+        .sheet(item: $selectedCredit) { credit in
             NavigationStack {
-                GoalDetailView(goal: goal)
-                    .navigationBarTitle("Детали цели", displayMode: .inline)
+                CreditDetailView(credit: credit)
+                    .navigationBarTitle("Детали кредита", displayMode: .inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Закрыть") {
-                                selectedGoal = nil
+                                selectedCredit = nil
                             }
                         }
                     }

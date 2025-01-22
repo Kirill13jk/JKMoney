@@ -16,29 +16,24 @@ struct AdaptiveContainer: View {
     // MARK: - iPhone
     private var iPhoneContent: some View {
         TabView(selection: $selectedItem) {
-            NavigationView { HomeView() }
+            NavigationView { TransactionView() }
                 .tabItem {
-                    Label("Главная", systemImage: "house.fill")
+                    Label("Транзакции", systemImage: "arrow.up.arrow.down.circle.fill")
                 }
                 .tag(SidebarItem.home)
+            
+            // BudgetsParentView со встроенным Picker [Счета, Кредиты, Планы]
+            NavigationView { BudgetsParentView() }
+                .tabItem {
+                    Label("Бюджет", systemImage: "dollarsign.circle")
+                }
+                .tag(SidebarItem.budget)
             
             NavigationView { AnalyticsView() }
                 .tabItem {
                     Label("Аналитика", systemImage: "chart.pie")
                 }
                 .tag(SidebarItem.analytics)
-            
-            NavigationView { BudgetsView() }
-                .tabItem {
-                    Label("Бюджет", systemImage: "dollarsign.circle")
-                }
-                .tag(SidebarItem.budget)
-            
-            NavigationView { GoalsView() }
-                .tabItem {
-                    Label("Цели", systemImage: "flag.fill")
-                }
-                .tag(SidebarItem.goals)
             
             NavigationView { SettingsView() }
                 .tabItem {
@@ -56,15 +51,13 @@ struct AdaptiveContainer: View {
         } detail: {
             switch selectedItem {
             case .home:
-                HomeView()
+                TransactionView()
+            case .budget:
+                BudgetsParentView()
             case .analytics:
                 AnalyticsView()
-            case .budget:
-                BudgetsView()
             case .settings:
                 SettingsView()
-            case .goals:
-                GoalsView()
             }
         }
         .navigationSplitViewStyle(.balanced)
@@ -77,10 +70,9 @@ struct AdaptiveContainer: View {
                 .font(.headline)
                 .padding(.vertical, 8)
             
-            row(.home, label: "Главная", icon: "house.fill")
-            row(.analytics, label: "Аналитика", icon: "chart.pie")
+            row(.home, label: "Транзакции", icon: "arrow.up.arrow.down.circle.fill")
             row(.budget, label: "Бюджет", icon: "dollarsign.circle")
-            row(.goals, label: "Цели", icon: "flag.fill")
+            row(.analytics, label: "Аналитика", icon: "chart.pie")
             row(.settings, label: "Настройки", icon: "gear")
         }
         .listStyle(.sidebar)
@@ -107,8 +99,7 @@ struct AdaptiveContainer: View {
 
 enum SidebarItem {
     case home
-    case analytics
     case budget
+    case analytics
     case settings
-    case goals 
 }

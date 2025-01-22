@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct HomeView: View {
+struct TransactionView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var colorManager: ColorManager
     

@@ -23,7 +23,7 @@ struct BudgetDetailView: View {
     
     var body: some View {
         Form {
-            Section(header: Text("Текущий бюджет")) {
+            Section("Текущий бюджет") {
                 HStack {
                     Text("Текущая сумма:")
                     Spacer()
@@ -33,7 +33,7 @@ struct BudgetDetailView: View {
                 Text("Дата: \(budget.date, style: .date)")
             }
             
-            Section(header: Text("Изменить сумму")) {
+            Section("Изменить сумму") {
                 Picker("Тип", selection: $changeType) {
                     Text("Доход").tag(TransactionType.income)
                     Text("Расход").tag(TransactionType.expense)
@@ -42,12 +42,10 @@ struct BudgetDetailView: View {
                 
                 TextField("Введите сумму", text: $changeAmount)
                     .keyboardType(.decimalPad)
-                    .onChange(of: changeAmount) { oldValue, newValue in
-                        DispatchQueue.main.async {
-                            let formatted = formatInput(newValue)
-                            if formatted != newValue {
-                                changeAmount = formatted
-                            }
+                    .onChange(of: changeAmount) { _, newValue in
+                        let formatted = formatInput(newValue)
+                        if formatted != newValue {
+                            changeAmount = formatted
                         }
                     }
             }
@@ -70,7 +68,6 @@ struct BudgetDetailView: View {
                 }
             }
         }
-        .navigationTitle("Детали бюджета")
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Сохранить") {
@@ -105,11 +102,13 @@ struct BudgetDetailView: View {
             amount: delta
         )
         modelContext.insert(record)
+        
         try? modelContext.save()
         dismiss()
     }
 }
 
+// MARK: - Helpers
 extension BudgetDetailView {
     private func formatted(_ value: Double) -> String {
         let formatter = NumberFormatter()
@@ -134,7 +133,6 @@ extension BudgetDetailView {
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 2
         formatter.groupingSeparator = " "
-        
         return formatter.string(from: NSNumber(value: rawNumber)) ?? input
     }
 }
