@@ -13,47 +13,47 @@ struct AdaptiveContainer: View {
         }
     }
     
-    // MARK: - iPhone
+    // MARK: - iPhone: TabView c тремя вкладками
     private var iPhoneContent: some View {
         TabView(selection: $selectedItem) {
-            NavigationView { TransactionView() }
-                .tabItem {
-                    Label("Транзакции", systemImage: "arrow.up.arrow.down.circle.fill")
-                }
-                .tag(SidebarItem.home)
+            // 1. Home
+            NavigationView {
+                HomeView() // новый главный экран с Picker
+            }
+            .tabItem {
+                Label("Главная", systemImage: "house")
+            }
+            .tag(SidebarItem.home)
             
-            // BudgetsParentView со встроенным Picker [Счета, Кредиты, Планы]
-            NavigationView { BudgetsParentView() }
-                .tabItem {
-                    Label("Бюджет", systemImage: "dollarsign.circle")
-                }
-                .tag(SidebarItem.budget)
+            // 2. Analytics
+            NavigationView {
+                AnalyticsView()
+            }
+            .tabItem {
+                Label("Аналитика", systemImage: "chart.pie")
+            }
+            .tag(SidebarItem.analytics)
             
-            NavigationView { AnalyticsView() }
-                .tabItem {
-                    Label("Аналитика", systemImage: "chart.pie")
-                }
-                .tag(SidebarItem.analytics)
-            
-            NavigationView { SettingsView() }
-                .tabItem {
-                    Label("Настройки", systemImage: "gear")
-                }
-                .tag(SidebarItem.settings)
+            // 3. Settings
+            NavigationView {
+                SettingsView()
+            }
+            .tabItem {
+                Label("Настройки", systemImage: "gear")
+            }
+            .tag(SidebarItem.settings)
         }
         .accentColor(.blue)
     }
     
-    // MARK: - iPad
+    // MARK: - iPad: NavigationSplitView
     private var iPadContent: some View {
         NavigationSplitView(columnVisibility: .constant(.all)) {
             sidebar
         } detail: {
             switch selectedItem {
             case .home:
-                TransactionView()
-            case .budget:
-                BudgetsParentView()
+                HomeView()
             case .analytics:
                 AnalyticsView()
             case .settings:
@@ -64,14 +64,14 @@ struct AdaptiveContainer: View {
         .navigationSplitViewColumnWidth(min: 240, ideal: 280, max: 320)
     }
     
+    // MARK: - Боковая панель для iPad
     private var sidebar: some View {
         List {
             Text("Меню")
                 .font(.headline)
                 .padding(.vertical, 8)
             
-            row(.home, label: "Транзакции", icon: "arrow.up.arrow.down.circle.fill")
-            row(.budget, label: "Бюджет", icon: "dollarsign.circle")
+            row(.home, label: "Главная", icon: "house")
             row(.analytics, label: "Аналитика", icon: "chart.pie")
             row(.settings, label: "Настройки", icon: "gear")
         }
@@ -79,6 +79,7 @@ struct AdaptiveContainer: View {
         .scrollContentBackground(.automatic)
     }
     
+    // MARK: - Вспомогательная вью для ячейки в sidebar
     private func row(_ item: SidebarItem, label: String, icon: String) -> some View {
         Button {
             selectedItem = item
@@ -97,9 +98,9 @@ struct AdaptiveContainer: View {
     }
 }
 
+// MARK: - Перечисление пунктов бокового меню
 enum SidebarItem {
     case home
-    case budget
     case analytics
     case settings
 }

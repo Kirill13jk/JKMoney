@@ -8,7 +8,6 @@ struct BudgetDetailView: View {
     let budget: Budget
     
     @Query private var history: [BudgetHistory]
-    
     @State private var changeType: TransactionType = .income
     @State private var changeAmount: String = ""
     
@@ -32,14 +31,12 @@ struct BudgetDetailView: View {
                 }
                 Text("Дата: \(budget.date, style: .date)")
             }
-            
             Section("Изменить сумму") {
                 Picker("Тип", selection: $changeType) {
                     Text("Доход").tag(TransactionType.income)
                     Text("Расход").tag(TransactionType.expense)
                 }
                 .pickerStyle(.segmented)
-                
                 TextField("Введите сумму", text: $changeAmount)
                     .keyboardType(.decimalPad)
                     .onChange(of: changeAmount) { _, newValue in
@@ -49,7 +46,6 @@ struct BudgetDetailView: View {
                         }
                     }
             }
-            
             Section("История") {
                 if history.isEmpty {
                     Text("Пока нет операций.")
@@ -106,10 +102,7 @@ struct BudgetDetailView: View {
         try? modelContext.save()
         dismiss()
     }
-}
-
-// MARK: - Helpers
-extension BudgetDetailView {
+    
     private func formatted(_ value: Double) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
@@ -128,7 +121,6 @@ extension BudgetDetailView {
         guard let rawNumber = Double(rawString) else {
             return input
         }
-        
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 2

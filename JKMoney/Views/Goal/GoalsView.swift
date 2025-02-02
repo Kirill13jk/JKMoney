@@ -2,21 +2,16 @@ import SwiftUI
 import SwiftData
 
 enum GoalFilter: String, CaseIterable {
-    case all = "План"
-    case completed = "Исполненные"
+    case all = "Цели"
+    case completed = "Исполнено"
 }
 
 struct GoalsView: View {
     @Environment(\.modelContext) private var modelContext
-    
     @Query private var allGoals: [Goal]
     
     @State private var selectedFilter: GoalFilter = .all
-    
-    /// Шторка для AddGoalView
     @State private var showAddGoalSheet = false
-    
-    /// Шторка для деталей
     @State private var selectedGoal: Goal? = nil
     
     init() {
@@ -37,47 +32,52 @@ struct GoalsView: View {
     }
     
     var body: some View {
-        VStack {
-            Picker("Фильтр", selection: $selectedFilter) {
-                ForEach(GoalFilter.allCases, id: \.self) { filter in
-                    Text(filter.rawValue).tag(filter)
-                }
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
-            .padding(.top, 8)
+        ZStack {
+            Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all)
             
-            if filteredGoals.isEmpty {
-                Spacer()
-                Text(selectedFilter == .completed
-                     ? "Нет исполненных целей"
-                     : "Нет целей. \nНажмите «+» чтобы добавить.")
-                    .multilineTextAlignment(.center)
-                    .padding()
-                Spacer()
-            } else {
-                List {
-                    ForEach(filteredGoals) { goal in
-                        Button {
-                            selectedGoal = goal
-                        } label: {
-                            GoalRow(goal: goal)
-                                .contentShape(Rectangle())
-                        }
-                        .swipeActions {
-                            Button(role: .destructive) {
-                                modelContext.delete(goal)
-                                try? modelContext.save()
+            VStack {
+                Picker("Фильтр", selection: $selectedFilter) {
+                    ForEach(GoalFilter.allCases, id: \.self) { filter in
+                        Text(filter.rawValue).tag(filter)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.top, 8)
+                
+                if filteredGoals.isEmpty {
+                    Spacer()
+                    Text(selectedFilter == .completed
+                         ? "Нет исполненных целей"
+                         : "Нет целей. \nНажмите «+» чтобы добавить.")
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    Spacer()
+                } else {
+                    List {
+                        ForEach(filteredGoals) { goal in
+                            Button {
+                                selectedGoal = goal
                             } label: {
-                                Label("Удалить", systemImage: "trash")
+                                GoalRow(goal: goal)
+                                    .contentShape(Rectangle())
+                            }
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    modelContext.delete(goal)
+                                    try? modelContext.save()
+                                } label: {
+                                    Label("Удалить", systemImage: "trash")
+                                }
                             }
                         }
                     }
+                    .listStyle(.insetGrouped)
                 }
-                .listStyle(.insetGrouped)
             }
         }
         .navigationTitle("Цели")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
@@ -90,7 +90,6 @@ struct GoalsView: View {
                 }
             }
         }
-        // Шторка для AddGoalView
         .sheet(isPresented: $showAddGoalSheet) {
             NavigationStack {
                 AddGoalView()
@@ -103,10 +102,7 @@ struct GoalsView: View {
                         }
                     }
             }
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
         }
-        // Шторка для деталей
         .sheet(item: $selectedGoal) { goal in
             NavigationStack {
                 GoalDetailView(goal: goal)
@@ -119,8 +115,6 @@ struct GoalsView: View {
                         }
                     }
             }
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
         }
     }
 }

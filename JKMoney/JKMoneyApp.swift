@@ -12,7 +12,11 @@ struct JKMoneyApp: App {
             RootView()
                 .environmentObject(appViewModel)
                 .environmentObject(colorManager)
-                .modelContainer(for: [Transaction.self, Budget.self, BudgetHistory.self, Goal.self, UserProfile.self])
+                .modelContainer(for: [Transaction.self, Budget.self, BudgetHistory.self, Goal.self, Credit.self, UserProfile.self, PlannedExpense.self])
+                .onAppear {
+                    // 1. Запрашиваем разрешение на уведомления
+                    NotificationManager.shared.requestAuthorization()
+                }
                 .preferredColorScheme(colorSchemeFromTheme(selectedTheme))
         }
     }

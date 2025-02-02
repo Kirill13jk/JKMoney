@@ -56,6 +56,7 @@ struct DateRangePickerView: View {
                 Spacer()
             }
             .navigationTitle("Выберите период")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Отмена") {

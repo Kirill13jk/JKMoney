@@ -1,6 +1,11 @@
 import SwiftData
 import Foundation
 
+enum CreditKind: String, Codable, CaseIterable {
+    case credit = "Кредит"
+    case loan   = "Займ"
+}
+
 @Model
 final class Credit: Identifiable {
     @Attribute(.unique) var id: UUID
@@ -12,6 +17,7 @@ final class Credit: Identifiable {
     var userId: String
     var currency: CurrencyType?
     var comment: String?
+    var creditKind: CreditKind
 
     init(
         id: UUID = UUID(),
@@ -22,7 +28,8 @@ final class Credit: Identifiable {
         dateCreated: Date = Date(),
         userId: String,
         currency: CurrencyType? = nil,
-        comment: String? = nil
+        comment: String? = nil,
+        creditKind: CreditKind = .credit
     ) {
         self.id = id
         self.title = title
@@ -33,5 +40,6 @@ final class Credit: Identifiable {
         self.userId = userId
         self.currency = currency
         self.comment = comment
+        self.creditKind = creditKind
     }
 }

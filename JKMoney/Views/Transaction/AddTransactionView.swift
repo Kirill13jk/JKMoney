@@ -9,8 +9,14 @@ struct AddTransactionView: View {
     @State private var date: Date = Date()
     @State private var selectedType: TransactionType = .income
     @State private var selectedCurrency: CurrencyType = .usd
+    
+    // Ставим первую категорию из incomeCategories по умолчанию
     @State private var selectedCategoryItem: CategoryItem = incomeCategories.first!
+    
     @State private var comment: String = ""
+    
+    // Новая переменная для кастомной категории
+    @State private var customCategoryTitle: String = ""
     
     private var currentCategories: [CategoryItem] {
         selectedType == .income ? incomeCategories : expenseCategories
@@ -18,6 +24,12 @@ struct AddTransactionView: View {
     
     private var isFormValid: Bool {
         guard let amt = Double(amount.replacingOccurrences(of: " ", with: "")), amt > 0 else {
+            return false
+        }
+        
+        // Если выбрана "Другое", убедимся, что пользователь не оставил поле пустым
+        if selectedCategoryItem.title == "Другое",
+           customCategoryTitle.trimmingCharacters(in: .whitespaces).isEmpty {
             return false
         }
         return true
@@ -43,6 +55,11 @@ struct AddTransactionView: View {
                     }
                 }
                 
+                // Если пользователь выбрал «Другое», показываем поле для ввода
+                if selectedCategoryItem.title == "Другое" {
+                    TextField("Введите вашу категорию", text: $customCategoryTitle)
+                }
+                
                 Picker("Валюта", selection: $selectedCurrency) {
                     ForEach(CurrencyType.allCases, id: \.self) { currency in
                         Text(currency.rawValue).tag(currency)
@@ -51,27 +68,35 @@ struct AddTransactionView: View {
                 
                 TextField("Сумма", text: $amount)
                     .keyboardType(.decimalPad)
+                    .onChange(of: amount) { _, newVal in
+                        let formatted = formatAmount(newVal)
+                        if formatted != newVal {
+                            amount = formatted
+                        }
+                    }
                 
                 DatePicker("Дата", selection: $date, displayedComponents: .date)
             }
-            
             Section("Комментарий (необязательно)") {
                 TextField("Комментарий...", text: $comment, axis: .vertical)
                     .lineLimit(3, reservesSpace: true)
             }
         }
-        .navigationTitle("Новая транзакция")
+        .onChange(of: selectedType) { _ in
+            // При смене типа (Доход/Расход) сбрасываем customCategoryTitle
+            // если выбранная категория теперь отсутствует
+            if !currentCategories.contains(selectedCategoryItem),
+               let firstCat = currentCategories.first {
+                selectedCategoryItem = firstCat
+            }
+            customCategoryTitle = ""
+        }
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Сохранить") {
                     saveTransaction()
                 }
                 .disabled(!isFormValid)
-            }
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Отмена") {
-                    dismiss()
-                }
             }
         }
     }
@@ -81,11 +106,16 @@ struct AddTransactionView: View {
         guard let uid = UserDefaults.standard.string(forKey: "userId") else { return }
         guard let amt = Double(amount.replacingOccurrences(of: " ", with: "")) else { return }
         
+        // Смотрим, была ли выбрана «Другое»
+        let finalCategoryTitle = (selectedCategoryItem.title == "Другое")
+            ? customCategoryTitle
+            : selectedCategoryItem.title
+        
         let transaction = Transaction(
-            title: selectedCategoryItem.title,
+            title: finalCategoryTitle,
             amount: amt,
             date: date,
-            category: selectedCategoryItem.title,
+            category: finalCategoryTitle,
             type: selectedType,
             currency: selectedCurrency,
             userId: uid,
@@ -95,5 +125,17 @@ struct AddTransactionView: View {
         modelContext.insert(transaction)
         try? modelContext.save()
         dismiss()
+    }
+    
+    private func formatAmount(_ input: String) -> String {
+        let rawString = input.replacingOccurrences(of: " ", with: "")
+        guard let rawNumber = Double(rawString) else {
+            return input
+        }
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        formatter.groupingSeparator = " "
+        return formatter.string(from: NSNumber(value: rawNumber)) ?? input
     }
 }

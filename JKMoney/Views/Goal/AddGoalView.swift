@@ -45,7 +45,7 @@ struct AddGoalView: View {
                     .lineLimit(3, reservesSpace: true)
             }
         }
-        .navigationTitle("Новая цель")
+        .navigationTitle("Новая")
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Сохранить") {

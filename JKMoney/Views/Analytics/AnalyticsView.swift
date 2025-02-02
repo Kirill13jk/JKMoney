@@ -72,5 +72,6 @@ struct AnalyticsView: View {
             .padding(.horizontal)
         }
         .navigationTitle("Аналитика")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

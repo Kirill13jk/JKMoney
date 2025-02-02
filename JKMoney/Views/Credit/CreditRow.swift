@@ -5,20 +5,17 @@ struct CreditRow: View {
     
     var body: some View {
         HStack(spacing: 16) {
+            Image(systemName: "building.columns.fill")
+                .foregroundColor(.blue)
+                .font(.title3)
+            
             VStack(alignment: .leading) {
                 Text(credit.title)
                     .font(.headline)
-                if let comment = credit.comment, !comment.isEmpty {
-                    Text(comment)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                } else {
-                    Text(credit.categoryTitle)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
             }
+            
             Spacer()
+            
             VStack(alignment: .trailing) {
                 Text("\(formatted(credit.paidAmount)) / \(formatted(credit.totalAmount)) \(credit.currency?.rawValue ?? "")")
                     .font(.footnote)

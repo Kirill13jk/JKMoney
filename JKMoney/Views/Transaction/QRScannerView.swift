@@ -15,7 +15,6 @@ struct QRScannerView: UIViewControllerRepresentable {
 
 final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     var onScan: ((String) -> Void)?
-    
     private let session = AVCaptureSession()
     private var previewLayer: AVCaptureVideoPreviewLayer?
     
@@ -29,9 +28,7 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
               let input = try? AVCaptureDeviceInput(device: device) else {
             return
         }
-        
         session.addInput(input)
-        
         let output = AVCaptureMetadataOutput()
         session.addOutput(output)
         output.setMetadataObjectsDelegate(self, queue: .main)
@@ -42,7 +39,6 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
         preview.frame = view.bounds
         view.layer.addSublayer(preview)
         previewLayer = preview
-        
         session.startRunning()
     }
     

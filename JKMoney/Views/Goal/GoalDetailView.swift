@@ -56,7 +56,7 @@ struct GoalDetailView: View {
                     }
             }
         }
-        .navigationTitle("Детали цели")
+        .navigationTitle("Детали")
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Сохранить") {

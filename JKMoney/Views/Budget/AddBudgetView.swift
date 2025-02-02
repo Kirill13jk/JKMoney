@@ -7,24 +7,39 @@ struct AddBudgetView: View {
     
     private var type: TransactionType = .income
     
+    @State private var selectedCategoryItem: CategoryItem = budgetCategories.first!
     @State private var amount: String = ""
     @State private var currency: CurrencyType = .usd
     @State private var date: Date = Date()
     
     private var isFormValid: Bool {
-        guard let amt = Double(amount.replacingOccurrences(of: " ", with: "")), amt > 0 else { return false }
+        guard let amt = Double(amount.replacingOccurrences(of: " ", with: "")), amt > 0 else {
+            return false
+        }
         return true
     }
+
     
     var body: some View {
         Form {
+            Section("Категория") {
+                Picker("Выберите категорию", selection: $selectedCategoryItem) {
+                    ForEach(budgetCategories, id: \.id) { cat in
+                        HStack {
+                            Image(systemName: cat.icon)
+                            Text(cat.title)
+                        }
+                        .tag(cat)
+                    }
+                }
+            }
+            
             Section {
                 Picker("Валюта", selection: $currency) {
                     ForEach(CurrencyType.allCases, id: \.self) { c in
                         Text(c.rawValue.uppercased()).tag(c)
                     }
                 }
-                
                 TextField("Сумма", text: $amount)
                     .keyboardType(.decimalPad)
                     .onChange(of: amount) { _, newValue in
@@ -33,7 +48,6 @@ struct AddBudgetView: View {
                             amount = formatted
                         }
                     }
-                
                 DatePicker("Дата", selection: $date, displayedComponents: .date)
             }
         }
@@ -44,7 +58,6 @@ struct AddBudgetView: View {
                 }
                 .disabled(!isFormValid)
             }
-
         }
     }
     
@@ -57,7 +70,8 @@ struct AddBudgetView: View {
             amount: amt,
             currency: currency,
             date: date,
-            userId: userId
+            userId: userId,
+            categoryTitle: selectedCategoryItem.title  // Сохраняем строку
         )
         modelContext.insert(budget)
         try? modelContext.save()
@@ -70,6 +84,7 @@ struct AddBudgetView: View {
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 2
         formatter.groupingSeparator = " "
+        formatter.locale = Locale.current
         return formatter.string(from: NSNumber(value: rawNumber)) ?? input
     }
 }

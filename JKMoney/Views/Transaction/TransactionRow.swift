@@ -5,24 +5,22 @@ struct TransactionRow: View {
     let transaction: Transaction
     
     var body: some View {
-        let categoryItem = findCategory(for: transaction.category)
+        let catItem = findCategory(for: transaction.category)
         
         HStack {
-            if let catItem = categoryItem {
-                Image(systemName: catItem.icon)
-                    .foregroundColor(categoryItem?.color ?? .primary)
-                    .padding(6)
-
+            if let cat = catItem {
+                Image(systemName: cat.icon)
+                    .foregroundColor(cat.color)
             } else {
                 Image(systemName: "questionmark.circle")
                     .foregroundColor(.gray)
-                    .font(.title3)
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(transaction.category)
                     .font(.headline)
-                    .foregroundColor(.primary)
+                
+                // Комментарий убрали — теперь он будет только в Detail
                 
                 Text(transaction.type == .income ? "Доход" : "Расход")
                     .font(.subheadline)
@@ -32,7 +30,8 @@ struct TransactionRow: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 4) {
-                Text("\(transaction.amount, specifier: "%.2f") \(transaction.currency.rawValue)")
+                // Используем formatInt(...) вместо "%.2f"
+                Text("\(formatInt(transaction.amount)) \(transaction.currency.rawValue)")
                     .fontWeight(.bold)
                     .foregroundColor(transaction.type == .income ? .green : .red)
                 
@@ -41,11 +40,6 @@ struct TransactionRow: View {
                     .foregroundColor(.gray)
             }
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color(UIColor.secondarySystemBackground))
-        )
     }
     
     private func findCategory(for title: String) -> CategoryItem? {
