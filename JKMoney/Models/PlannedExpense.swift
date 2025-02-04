@@ -6,12 +6,14 @@ class PlannedExpense {
     @Attribute(.unique) var id: UUID
     var userId: String
     var dateCreated: Date
-    
     var title: String
     var categoryTitle: String
     var amount: Double
     var reminderDate: Date
     var comment: String?
+    
+    // Используем полностью квалифицированное значение
+    var currency: CurrencyType = CurrencyType.usd
     
     init(
         id: UUID = UUID(),
@@ -21,7 +23,8 @@ class PlannedExpense {
         categoryTitle: String,
         amount: Double,
         reminderDate: Date,
-        comment: String? = nil
+        comment: String? = nil,
+        currency: CurrencyType
     ) {
         self.id = id
         self.userId = userId
@@ -31,5 +34,6 @@ class PlannedExpense {
         self.amount = amount
         self.reminderDate = reminderDate
         self.comment = comment
+        self.currency = currency
     }
 }

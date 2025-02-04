@@ -75,7 +75,7 @@ struct CreditView: View {
                 } label: {
                     Image(systemName: "plus")
                         .padding(10)
-                        .background(Color(UIColor.secondarySystemBackground))
+                        .background(Color(UIColor.tertiarySystemBackground))
                         .clipShape(Circle())
                 }
             }

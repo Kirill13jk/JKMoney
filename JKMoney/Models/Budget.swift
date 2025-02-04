@@ -9,7 +9,7 @@ final class Budget {
     var currency: CurrencyType
     var date: Date
     var userId: String
-    var categoryTitle: String  // Новое поле для "Депозит, Счет, Наличка"
+    var categoryTitle: String
 
     init(
         id: UUID = UUID(),

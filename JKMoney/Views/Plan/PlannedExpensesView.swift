@@ -4,19 +4,16 @@ import SwiftData
 struct PlannedExpensesView: View {
     @Environment(\.modelContext) private var modelContext
     
-    // Запрос всех планов пользователя
     @Query private var plans: [PlannedExpense]
     
     @State private var showAddPlanSheet = false
     @State private var selectedPlan: PlannedExpense? = nil
     
-    // Высчитываем общий расход по всем планам
     private var totalPlanned: Double {
         plans.reduce(0) { $0 + $1.amount }
     }
     
     init() {
-        // Фильтруем по userId
         let uid = UserDefaults.standard.string(forKey: "userId") ?? "NOUSER"
         _plans = Query(
             filter: #Predicate { $0.userId == uid },
@@ -33,11 +30,10 @@ struct PlannedExpensesView: View {
                 emptyStateView
             } else {
                 VStack(spacing: 0) {
-                    // Показ общего расхода
                     Text("Общий расход: \(formatInt(totalPlanned))")
                         .font(.headline)
-                        .padding(.vertical, 8)
-                    
+                        .foregroundColor(.orange)
+                        .padding(.vertical, 4) // уменьшенный отступ
                     listView
                 }
             }
@@ -108,9 +104,18 @@ struct PlannedExpensesView: View {
                     } label: {
                         Label("Удалить", systemImage: "trash")
                     }
+                    .tint(.red)
                 }
             }
         }
         .listStyle(.insetGrouped)
+    }
+    
+    private func formatInt(_ value: Double) -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .decimal
+        f.maximumFractionDigits = 0
+        f.groupingSeparator = " "
+        return f.string(from: NSNumber(value: value)) ?? "\(Int(value))"
     }
 }

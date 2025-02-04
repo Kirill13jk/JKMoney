@@ -5,6 +5,8 @@ struct AddCreditView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
+    @AppStorage("defaultCurrency") private var defaultCurrency: CurrencyType = .usd
+    
     @State private var totalAmount: String = ""
     @State private var selectedCategory: String = creditCategories.first?.title ?? "Другое"
     @State private var selectedCurrency: CurrencyType = .usd
@@ -54,6 +56,9 @@ struct AddCreditView: View {
             }
         }
         .navigationTitle("Новый")
+        .onAppear {
+            selectedCurrency = defaultCurrency
+        }
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Сохранить") { saveCredit() }

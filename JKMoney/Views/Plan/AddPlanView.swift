@@ -5,10 +5,14 @@ struct AddPlanView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
+    @AppStorage("defaultCurrency") private var defaultCurrency: CurrencyType = .usd
+    
     @State private var selectedCategory: CategoryItem = budgetCategories.first!
     @State private var customCategoryTitle: String = ""
     
+    // Держим выбранную валюту в @State, изначально .usd (или любое другое)
     @State private var selectedCurrency: CurrencyType = .usd
+    
     @State private var amount: String = ""
     @State private var reminderDate: Date = Date()
     
@@ -38,16 +42,19 @@ struct AddPlanView: View {
                 }
             }
             
-            Section("Сумма и дата") {
+            Section("Сумма, валюта и дата") {
+                // Добавляем Picker для валюты
                 Picker("Валюта", selection: $selectedCurrency) {
                     ForEach(CurrencyType.allCases, id: \.self) { currency in
                         Text(currency.rawValue).tag(currency)
                     }
                 }
+                .pickerStyle(.segmented)
+                .padding(.vertical, 4)
                 
                 TextField("Сумма", text: $amount)
                     .keyboardType(.decimalPad)
-                    .onChange(of: amount) { _, newVal in
+                    .onChange(of: amount) { newVal in
                         let fmt = formatAmount(newVal)
                         if fmt != newVal {
                             amount = fmt
@@ -63,6 +70,9 @@ struct AddPlanView: View {
             }
         }
         .navigationTitle("Новый план")
+        .onAppear {
+            selectedCurrency = defaultCurrency
+        }
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Сохранить") {
@@ -85,7 +95,8 @@ struct AddPlanView: View {
             categoryTitle: finalCat,
             amount: val,
             reminderDate: reminderDate,
-            comment: comment.isEmpty ? nil : comment
+            comment: comment.isEmpty ? nil : comment,
+            currency: selectedCurrency    // Передаём выбранную валюту
         )
         
         modelContext.insert(newPlan)
@@ -97,7 +108,6 @@ struct AddPlanView: View {
         dismiss()
     }
     
-    // MARK: - Helpers
     private func formatAmount(_ input: String) -> String {
         let raw = input.replacingOccurrences(of: " ", with: "")
         guard let rawNum = Double(raw) else { return input }

@@ -28,7 +28,8 @@ struct PlanRow: View {
             Spacer()
             
             VStack(alignment: .trailing) {
-                Text("\(formatInt(plan.amount))")
+               
+                Text("\(formatInt(plan.amount)) \(plan.currency.rawValue)")
                     .fontWeight(.bold)
                     .foregroundColor(.orange)
                 
@@ -41,10 +42,10 @@ struct PlanRow: View {
     }
     
     private func formatInt(_ val: Double) -> String {
-        let f = NumberFormatter()
-        f.numberStyle = .decimal
-        f.maximumFractionDigits = 0
-        f.groupingSeparator = " "
-        return f.string(from: NSNumber(value: val)) ?? "\(Int(val))"
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        formatter.groupingSeparator = " "
+        return formatter.string(from: NSNumber(value: val)) ?? "\(Int(val))"
     }
 }

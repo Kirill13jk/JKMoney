@@ -1,31 +1,74 @@
 import SwiftUI
 
+/// Пункты меню
+enum SidebarItem {
+    case home
+    case add
+    case qr
+    case analytics
+}
+
 @available(iOS 16.0, *)
 struct AdaptiveContainer: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    
+    /// Текущая выбранная вкладка
     @State private var selectedItem: SidebarItem = .home
     
+    /// Флаги для отображения sheet
+    @State private var showAddSheet = false
+    @State private var showQRSheet = false
+    
     var body: some View {
-        if horizontalSizeClass == .compact {
-            iPhoneContent
-        } else {
-            iPadContent
+        Group {
+            if horizontalSizeClass == .compact {
+                iPhoneContent
+            } else {
+                iPadContent
+            }
+        }
+        .sheet(isPresented: $showAddSheet) {
+            NavigationStack {
+                AddTransactionView()
+            }
+        }
+        // Второй sheet для «QR»
+        .sheet(isPresented: $showQRSheet) {
+            QRScannerView { scannedText in
+                print("Scanned text: \(scannedText)")
+                showQRSheet = false
+            }
         }
     }
     
-    // MARK: - iPhone: TabView c тремя вкладками
+    // MARK: - iPhone: TabView (4 вкладки)
     private var iPhoneContent: some View {
         TabView(selection: $selectedItem) {
-            // 1. Home
+            
+            // 1. Главная (TransactionView)
             NavigationView {
-                HomeView() // новый главный экран с Picker
+                TransactionView()
             }
             .tabItem {
                 Label("Главная", systemImage: "house")
             }
             .tag(SidebarItem.home)
             
-            // 2. Analytics
+            // 2. Добавить – используем Color.clear вместо EmptyView()
+            Color.clear
+                .tabItem {
+                    Label("Добавить", systemImage: "plus.circle.fill")
+                }
+                .tag(SidebarItem.add)
+            
+            // 3. QR – используем Color.clear вместо EmptyView()
+            Color.clear
+                .tabItem {
+                    Label("QR", systemImage: "qrcode.viewfinder")
+                }
+                .tag(SidebarItem.qr)
+            
+            // 4. Аналитика
             NavigationView {
                 AnalyticsView()
             }
@@ -33,35 +76,57 @@ struct AdaptiveContainer: View {
                 Label("Аналитика", systemImage: "chart.pie")
             }
             .tag(SidebarItem.analytics)
-            
-            // 3. Settings
-            NavigationView {
-                SettingsView()
+        }
+        .onChange(of: selectedItem) { newValue in
+            switch newValue {
+            case .home:
+                break
+            case .add:
+                showAddSheet = true
+                selectedItem = .home
+            case .qr:
+                showQRSheet = true
+                selectedItem = .home
+            case .analytics:
+                break
             }
-            .tabItem {
-                Label("Настройки", systemImage: "gear")
-            }
-            .tag(SidebarItem.settings)
         }
         .accentColor(.blue)
     }
     
-    // MARK: - iPad: NavigationSplitView
+    // MARK: - iPad: NavigationSplitView (4 пункта)
     private var iPadContent: some View {
         NavigationSplitView(columnVisibility: .constant(.all)) {
             sidebar
         } detail: {
             switch selectedItem {
             case .home:
-                HomeView()
+                TransactionView()
+            case .add:
+                // iPad: при выборе «Добавить» тоже можем открыть sheet
+                EmptyView()
+            case .qr:
+                // iPad: при выборе «QR» открываем sheet
+                EmptyView()
             case .analytics:
                 AnalyticsView()
-            case .settings:
-                SettingsView()
             }
         }
         .navigationSplitViewStyle(.balanced)
-        .navigationSplitViewColumnWidth(min: 240, ideal: 280, max: 320)
+        .onChange(of: selectedItem) { newValue in
+            switch newValue {
+            case .home:
+                break
+            case .add:
+                showAddSheet = true
+                selectedItem = .home
+            case .qr:
+                showQRSheet = true
+                selectedItem = .home
+            case .analytics:
+                break
+            }
+        }
     }
     
     // MARK: - Боковая панель для iPad
@@ -72,14 +137,15 @@ struct AdaptiveContainer: View {
                 .padding(.vertical, 8)
             
             row(.home, label: "Главная", icon: "house")
+            row(.add, label: "Добавить", icon: "plus.circle.fill")
+            row(.qr, label: "QR", icon: "qrcode.viewfinder")
             row(.analytics, label: "Аналитика", icon: "chart.pie")
-            row(.settings, label: "Настройки", icon: "gear")
         }
         .listStyle(.sidebar)
         .scrollContentBackground(.automatic)
     }
     
-    // MARK: - Вспомогательная вью для ячейки в sidebar
+    // MARK: - Генерация пунктов списка (iPad)
     private func row(_ item: SidebarItem, label: String, icon: String) -> some View {
         Button {
             selectedItem = item
@@ -96,11 +162,4 @@ struct AdaptiveContainer: View {
         }
         .buttonStyle(.plain)
     }
-}
-
-// MARK: - Перечисление пунктов бокового меню
-enum SidebarItem {
-    case home
-    case analytics
-    case settings
 }

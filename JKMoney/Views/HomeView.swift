@@ -2,9 +2,9 @@ import SwiftUI
 
 enum HomeTab: String, CaseIterable {
     case transaction = "Транзакции"
-    case budget      = "Бюджеты"
-    case credit      = "Кредиты"
-    case goals       = "Цели"
+    case budget = "Бюджеты"
+    case credit = "Кредиты"
+    case goals = "Цели"
 }
 
 /// Объединяет 4 экрана в одном с помощью сегментированного Picker
